@@ -20,19 +20,18 @@
       "capacity": [
         6
       ]
+    },
+    {
+      "id": 4,
+      "start_index": 3,
+      "capacity": [
+        6
+      ]
     }
   ],
   "jobs": [
     {
       "id": 1,
-      "location_index": 3,
-      "delivery": [
-        2
-      ],
-      "service": 327
-    },
-    {
-      "id": 2,
       "location_index": 4,
       "delivery": [
         1
@@ -40,7 +39,7 @@
       "service": 391
     },
     {
-      "id": 3,
+      "id": 2,
       "location_index": 5,
       "delivery": [
         1
@@ -48,7 +47,7 @@
       "service": 297
     },
     {
-      "id": 4,
+      "id": 3,
       "location_index": 6,
       "delivery": [
         2
@@ -56,7 +55,7 @@
       "service": 234
     },
     {
-      "id": 5,
+      "id": 4,
       "location_index": 7,
       "delivery": [
         1
@@ -64,7 +63,7 @@
       "service": 357
     },
     {
-      "id": 6,
+      "id": 5,
       "location_index": 8,
       "delivery": [
         1
@@ -72,7 +71,7 @@
       "service": 407
     },
     {
-      "id": 7,
+      "id": 6,
       "location_index": 9,
       "delivery": [
         1

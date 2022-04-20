@@ -7,9 +7,9 @@
 ```
 ### brute force
 ```bash
-    python run_brute_force.py
+    python run_bruteforce.py
     # or
-    python core.py -s brute_force
+    python core.py -s bruteforce
 ```
 
 ### alternative run
@@ -19,4 +19,4 @@
     python core.py -s <style> -f <input filename (optional)>
 ```
 ## styles
-* brute_force
+* bruteforce
