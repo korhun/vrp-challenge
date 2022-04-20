@@ -7,16 +7,16 @@
 ```
 ### brute force
 ```bash
-    python run_bruteforce.py
-    # or
     python core.py -s bruteforce
+    # to see the execution details
+    python core.py -s bruteforce -v
 ```
 
 ### alternative run
 ```bash
-    python core.py --style <style> --filename <input filename (optional)>
+    python core.py --style <style> --filename <input filename (optional)> --verbose
     # or
-    python core.py -s <style> -f <input filename (optional)>
+    python core.py -s <style> -f <input filename (optional)> -v
 ```
 ## styles
 * bruteforce

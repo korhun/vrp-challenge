@@ -7,12 +7,12 @@ from helpers import get_input
 from solver_bruteforce import SolverBruteForce
 
 
-def main(style, input_filename=None):
+def main(style, input_filename=None, verbose=None):
     print(f"style: {style}")
 
     if input_filename is None:
-        # input_filename = "./input/input.json"
-        input_filename = "./input/input_4_vehicles.json"
+        input_filename = "./input/input.json"
+        # input_filename = "./input/input_4_vehicles.json"
         # input_filename = "./input/input_single_vehicle.json"  # sil
     assert os.path.isfile(input_filename), f"Input file does not exist! {input_filename}"
 
@@ -24,7 +24,7 @@ def main(style, input_filename=None):
     vehicles, jobs, matrix = vrp_input["vehicles"], vrp_input["jobs"], vrp_input["matrix"]
     solver = None
     if style == "bruteforce":
-        solver = SolverBruteForce(vehicles, jobs, matrix)
+        solver = SolverBruteForce(vehicles, jobs, matrix, verbose)
     if solver is None:
         raise ValueError(f"Bad style: '{style}'")
 
@@ -38,5 +38,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--style", required=True, type=str)
     parser.add_argument("-f", "--filename", required=False, type=str)
+    parser.add_argument("-v", "--verbose", required=False, action='store_true')
     args = parser.parse_args()
-    main(args.style, args.filename)
+    main(args.style, args.filename, args.verbose)

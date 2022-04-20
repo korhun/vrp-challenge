@@ -6,8 +6,8 @@ from helpers import partition, lists_overlap, routes_distance_is_smaller_than, c
 
 class SolverBruteForce:
 
-    def __init__(self, vehicles, jobs, matrix):
-        self.vehicles, self.jobs, self.matrix = vehicles, jobs, matrix
+    def __init__(self, vehicles, jobs, matrix, verbose=None):
+        self.vehicles, self.jobs, self.matrix, self.verbose = vehicles, jobs, matrix, verbose
 
     @staticmethod
     def _get_partitions_that_contain_vehicles(locations, vehicle_start_locations):
@@ -120,7 +120,8 @@ class SolverBruteForce:
         count = 0
         for routes in self.get_all_routes(locations, vehicle_start_locations):
             count += 1
-            print_same_line(f"{routes}  count: {count}")
+            if self.verbose:
+                print_same_line(f"{routes}  count: {count}")
             is_smaller, dist = routes_distance_is_smaller_than(routes, self.matrix, min_dist)
             if is_smaller:
                 best_routes = routes
