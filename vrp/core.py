@@ -13,7 +13,7 @@ def main(style, input_filename=None, verbose=None):
     if input_filename is None:
         input_filename = "./input/input.json"
         # input_filename = "./input/input_4_vehicles.json"
-        # input_filename = "./input/input_single_vehicle.json"  # sil
+        # input_filename = "./input/input_single_vehicle.json"
     assert os.path.isfile(input_filename), f"Input file does not exist! {input_filename}"
 
     vrp_input = get_input(input_filename)

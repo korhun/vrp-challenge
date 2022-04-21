@@ -35,7 +35,7 @@ def lists_overlap(a, b):
     return not frozenset(a).isdisjoint(b)
 
 
-def calculate_route_distance(route, matrix):
+def calculate_route_cost(route, matrix):
     dist = 0
     pre_index = route[0]
     for i in range(1, len(route)):
@@ -44,38 +44,20 @@ def calculate_route_distance(route, matrix):
     return dist
 
 
-def calculate_all_routes_distance(routes, matrix):
-    return sum([calculate_route_distance(route, matrix) for route in routes])
+def calculate_all_routes_costs(routes, matrix):
+    return sum([calculate_route_cost(route, matrix) for route in routes])
 
 
-# def _route_has_distance_more_than(route, matrix, distance):
-#     dist = 0
-#     pre_index = route[0]
-#     for i in range(1, len(route)):
-#         index = route[i]
-#         dist += matrix[pre_index][index]
-#         if dist > distance:
-#             return True, None
-#     return False, dist
-
-
-def routes_distance_is_smaller_than(routes, matrix, distance):
+def routes_cost_is_smaller_than(routes, matrix, cost):
     dist = 0
     for route in routes:
         pre_index = route[0]
         for i in range(1, len(route)):
             index = route[i]
             dist += matrix[pre_index][index]
-            if dist >= distance:
+            if dist >= cost:
                 return False, None
     return True, dist
-    # dist = distance
-    # for route in routes:
-    #     is_more, dist1 = _route_has_distance_more_than(route, matrix, dist)
-    #     if is_more:
-    #         return True
-    #     dist -= dist1
-    # return False
 
 
 def print_same_line(text):
