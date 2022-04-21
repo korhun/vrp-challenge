@@ -35,6 +35,14 @@ def lists_overlap(a, b):
     return not frozenset(a).isdisjoint(b)
 
 
+def lists_overlap_count(a, b):
+    """
+    Finds two lists' common elements count
+    https://stackoverflow.com/a/4775027/1266873
+    """
+    return len(frozenset(a) & frozenset(b))
+
+
 def calculate_route_cost(route, matrix):
     dist = 0
     pre_index = route[0]
@@ -60,5 +68,30 @@ def routes_cost_is_smaller_than(routes, matrix, cost):
     return True, dist
 
 
+def route_cost_is_more_than(route, matrix, cost):
+    total = 0
+    pre_index = route[0]
+    for i in range(1, len(route)):
+        index = route[i]
+        total += matrix[pre_index][index]
+        if total > cost:
+            return True
+    return True
+
+
+def build_location_to_delivery(jobs):
+    tuples = []
+    for job in jobs:
+        tuples.append((job["location_index"], job["delivery"][0]))
+    return dict(tuples)
+
+
+def build_location_to_job(jobs):
+    tuples = []
+    for job in jobs:
+        tuples.append((job["location_index"], job))
+    return dict(tuples)
+
+
 def print_same_line(text):
-    print('\r' + text, end='')
+    print('\r' + text, end='                                                 ')
