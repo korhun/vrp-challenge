@@ -2,7 +2,7 @@ import itertools
 import sys
 
 from helpers import partition, routes_cost_is_smaller_than, calculate_all_routes_costs, print_same_line, \
-    build_location_to_delivery, build_location_to_job, route_cost_is_more_than
+    build_location_to_delivery, build_location_to_job, calculate_route_cost, build_location_to_vehicle
 
 
 class SolverBruteForce:
@@ -13,6 +13,7 @@ class SolverBruteForce:
 
         self.location_to_delivery = build_location_to_delivery(jobs)
         self.location_to_job = build_location_to_job(jobs)
+        self.location_to_vehicle = build_location_to_vehicle(vehicles)
 
         self.matrix = matrix
         self.vehicle_locations = [vehicle["start_index"] for vehicle in vehicles]
@@ -77,7 +78,7 @@ class SolverBruteForce:
 
     def solve(self):
         best_routes = None
-        min_dist = sys.maxsize
+        min_duration = sys.maxsize
 
         count = 0
         for routes in self._get_all_routes():
@@ -91,12 +92,30 @@ class SolverBruteForce:
             if self.verbose:
                 print_same_line(f"{routes} count: {count:,}")
 
-            is_smaller, dist = routes_cost_is_smaller_than(routes, self.matrix, min_dist)
+            is_smaller, dist = routes_cost_is_smaller_than(routes, self.matrix, min_duration)
             if is_smaller:
                 best_routes = routes
                 assert calculate_all_routes_costs(routes, self.matrix) == dist
-                min_dist = dist
-                print(f"\rmin_dist: {min_dist} - {best_routes}")
+                min_duration = dist
+                print(f"\rduration: {min_duration} - {best_routes}")
 
         print_same_line("*********** finished ***********")
-        print(f"\nmin_dist: {min_dist} - {best_routes}  count:{count:,}")
+        if best_routes is None:
+            return None
+        print(f"\nduration: {min_duration} - {best_routes}  count:{count:,}")
+
+        routes = {}
+        for route in best_routes:
+            vehicle_id = self.location_to_vehicle[route[0]]["id"]
+            jobs = []
+            for location in route[1:]:
+                jobs.append(str(self.location_to_job[location]["id"]))
+            routes[str(vehicle_id)] = {
+                "jobs": jobs,
+                "delivery_duration": calculate_route_cost(route, self.matrix)
+            }
+
+        return {
+            "total_delivery_duration": min_duration,
+            "routes": routes
+        }

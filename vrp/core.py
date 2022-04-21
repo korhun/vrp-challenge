@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import argparse
+import json
 import os
 import time
 
@@ -43,9 +44,13 @@ def main(style, input_filename=None, options=None):
         print(f"style: {style} - unlimited capacity")
 
     start = time.time()
-    solver.solve()
+    plan = solver.solve()
     end = time.time()
     print(f"elapsed {end - start}sec.")
+    if plan is None:
+        print("No valid plan could be calculated!!!")
+    else:
+        print(json.dumps(plan, indent=2))
 
 
 if __name__ == '__main__':

@@ -93,5 +93,12 @@ def build_location_to_job(jobs):
     return dict(tuples)
 
 
+def build_location_to_vehicle(vehicles):
+    tuples = []
+    for vehicle in vehicles:
+        tuples.append((vehicle["start_index"], vehicle))
+    return dict(tuples)
+
+
 def print_same_line(text):
     print('\r' + text, end='                                                 ')
