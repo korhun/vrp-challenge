@@ -1,1 +1,1 @@
-numpy
+setuptools==62.1.0

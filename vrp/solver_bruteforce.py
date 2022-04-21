@@ -97,12 +97,12 @@ class SolverBruteForce:
                 best_routes = routes
                 assert calculate_all_routes_costs(routes, self.matrix) == dist
                 min_duration = dist
-                print(f"\rduration: {min_duration} - {best_routes}")
+                print(f"\rtotal duration: {min_duration} - {best_routes}")
 
         print_same_line("*********** finished ***********")
         if best_routes is None:
             return None
-        print(f"\nduration: {min_duration} - {best_routes}  count:{count:,}")
+        print(f"\ntotal duration: {min_duration} - {best_routes}  count:{count:,}")
 
         routes = {}
         for route in best_routes:
