@@ -63,27 +63,30 @@ class SolverBruteForce:
                     return False
         return True
 
+    def _find_the_best_routes_in_permutations_of_the_parts(self, vehicles, parts):
+        # get all permutations for each part. ex: 3,4 - 5,6,7,8,9 | 4,3 - 9,7,8,6 | ...
+        # and fill the best_routes list with the pieces having the minimum cost
+        best_routes = []
+        for i, part in enumerate(parts):
+            min_cost = sys.maxsize
+            best_route = None
+            for part_permutation in itertools.permutations(part, len(part)):
+                # add the vehicle start location, so that we have a proper route
+                route = [vehicles[i], *part_permutation]
+                is_less, cost = route_costs_less_than(route, self.matrix, min_cost, self.service_times)
+                if is_less:
+                    min_cost = cost
+                    best_route = route
+            best_routes.append(best_route)
+        return best_routes
+
     def _get_routes_worth_checking(self):
-        # get all partition combinations for job locations. ex: 3,4 - 5,6,7,8,9 | 3,4, - 5,6 - 7,8,9 | ...
+        # get all partition combinations for job locations. ex: 3,4,5 - 6,7,8,9 | 3,4, - 5,6 - 7,8,9 | ...
         for parts in partition(self.job_locations):
             # get all vehicle start location permutations that has the same count with the 'parts'
-            # ex: for: [3,4 - 5,6,7,8,9] -> vehicles: 0,1 | 0,2 | 1,2 | 2,0 |...
+            # ex: the parts: [3,4,5 - 6,7,8,9] has 2 pieces, so -> vehicles: 0,1 | 0,2 | 1,2 | 2,0 |...
             for vehicles in itertools.permutations(self.vehicle_locations, len(parts)):
-                # get all permutations for each part. ex: 3,4 - 5,6,7,8,9 | 4,3 - 9,7,8,6 | ...
-                best_routes = []
-                for i, part in enumerate(parts):
-                    # find all permutations of each part and calculate the minimum costing route
-                    min_cost = sys.maxsize
-                    best_route = None
-                    for part_permutation in itertools.permutations(part, len(part)):
-                        # add the vehicle start location, so that we have a proper route
-                        route = [vehicles[i], *part_permutation]
-                        is_less, cost = route_costs_less_than(route, self.matrix, min_cost, self.service_times)
-                        if is_less:
-                            min_cost = cost
-                            best_route = route
-                    best_routes.append(best_route)
-                yield best_routes
+                yield self._find_the_best_routes_in_permutations_of_the_parts(vehicles, parts)
 
     def solve(self):
         best_routes = None
