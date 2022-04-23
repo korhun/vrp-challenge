@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 import time
+from datetime import timedelta
 
 from helpers import load_json_file
 from solver_bruteforce import SolverBruteForce
@@ -18,10 +19,10 @@ def _default_options(verbose=None, limited_capacity=None, include_service=None):
 
 def main(style, input_filename=None, options=None):
     if input_filename is None:
-        # input_filename = "./input/input.json"
+        input_filename = "./input/input.json"
         # input_filename = "./input/input_4_vehicles.json"
         # input_filename = "./input/input_single_vehicle.json"
-        input_filename = "./input/input_12_locations.json"
+        # input_filename = "./input/input_12_locations.json"
         # input_filename = "./input/input_14_locations.json"
         # input_filename = "./input/input_18_locations.json"
     if options is None:
@@ -55,7 +56,9 @@ def main(style, input_filename=None, options=None):
     end = time.time()
 
     print("🐢🐢🐢 finished 🐢🐢🐢")
-    print(f"elapsed time: {(end - start):.2}sec")
+    elapsed = (end - start)
+    time_txt = str(timedelta(seconds=elapsed))
+    print(f"elapsed time: {time_txt}")
     if plan is None:
         print("No feasible solution could be found!")
     else:
