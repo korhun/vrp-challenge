@@ -1,5 +1,6 @@
-import itertools
+import random
 import sys
+from array import array
 
 from utils.generic_helpers import partition, print_same_line
 from utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
@@ -12,7 +13,11 @@ class SolverGenetic:
         self.verbose = options["verbose"]
         self.limited_capacity = options["limited_capacity"]
 
-        self.population_size = options.get("population_size", 50)
+        self.gen_iteration = options.get("gen_iteration", 1000)
+        self.gen_k = options.get("gen_k", 50)
+        self.gen_crossover = options.get("gen_crossover", 32)
+        self.gen_mutation = options.get("gen_mutation", 14)
+        self.gen_new = options.get("gen_new", 4)
 
         self.service_times = build_location_to_job_service_times(jobs) if options["include_service"] else None
         self.location_to_delivery = build_location_to_delivery(jobs)
@@ -22,7 +27,6 @@ class SolverGenetic:
         self.matrix = matrix
         self.vehicle_locations = [vehicle["start_index"] for vehicle in vehicles]
         self.vehicle_ids = [vehicle["id"] for vehicle in vehicles]
-        self.vehicles_count = len(vehicles)
         self.job_locations = [job["location_index"] for job in jobs]
         self.vehicle_capacities = [vehicle["capacity"][0] for vehicle in vehicles]
 
@@ -51,57 +55,86 @@ class SolverGenetic:
     #         for vehicles in itertools.permutations(self.vehicle_locations, len(parts)):
     #             yield self._find_the_best_routes_in_permutations_of_the_parts(vehicles, parts)
 
+    # @staticmethod
+    # def _crossover(route1, route2):
+    #     start = random.randint(0, len(route1) - 1)
+    #     end = random.randint(start - 1, len(route2) - 1)
+    #     try:
+    #         end = random.randint(start + 1, len(route2) - 1)
+    #     except:
+    #         pass
+    #     new_route = route1[start:end]
+    #     for i in range(len(route2)):
+    #         p = route2[i]
+    #         if p not in new_route:
+    #             new_route.append(p)
+    #     return new_route
 
+    # def _routes_can_crossover(self, routes1, routes2):
+    #     if len(routes1) != len(routes2)
 
-    def _partition_random(collection, max_parts_count):
-        def _partition(collection):
-            # https://stackoverflow.com/a/30134039/1266873
-            if len(collection) == 1:
-                yield [collection]
-                return
+    @staticmethod
+    def random_partition(list_in, n):
+        # https://stackoverflow.com/a/51838144/1266873
+        random.shuffle(list_in)
+        return [list_in[i::n] for i in range(n)]
 
-            first = collection[0]
-            for smaller in _partition(collection[1:]):
-                # insert `first` in each of the subpartition's subsets
-                for n, subset in enumerate(smaller):
-                    yield smaller[:n] + [[first] + subset] + smaller[n + 1:]
-                # put `first` in its own subset
-                yield [[first]] + smaller
-
-        for parts in _partition(collection):
-            if len(parts) <= max_parts_count:
-                yield parts
-
-    def _generate_genomes(self):
-        # get all partition combinations for job locations. ex: 3,4,5 - 6,7,8,9 | 3,4, - 5,6 - 7,8,9 | ...
-        job_parts = list(partition(self.job_locations, self.vehicles_count))
-        print("aaa")
+    def _generate_random_routes(self):
+        # job partition ex: 3,4,5 - 6,7,8,9 | 3,4, - 5,6 - 7,8,9 | ...
+        part_count = random.randint(1, len(self.vehicle_locations))
+        vehicle_locations = self.vehicle_locations.copy()
+        random.shuffle(vehicle_locations)
+        vehicle_locations = vehicle_locations[:part_count]
+        job_partitions = list(self.random_partition(self.job_locations, part_count))
+        routes = []
+        for i, part in enumerate(job_partitions):
+            random.shuffle(part)
+            routes.append([vehicle_locations[i], *part])
+        return routes
 
     def solve(self):
         best_routes = None
         min_duration = sys.maxsize
 
-        self._generate_genomes()
+        population = []
+        for _ in range(self.gen_k):
+            population.append(self._generate_random_routes())
 
-        # for routes in self._get_routes_worth_checking():
-        #     if self.limited_capacity and not are_capacities_ok(self, routes):
-        #         if self.verbose:
-        #             print_same_line(f"{routes} - capacity nok!")
-        #         continue
-        #
-        #     if self.verbose:
-        #         print_same_line(f"{routes}")
-        #
-        #     is_smaller, dist = routes_cost_is_less_than(routes, self.matrix, min_duration, self.service_times)
-        #     if is_smaller:
-        #         best_routes = routes
-        #         assert calculate_all_routes_costs(routes, self.matrix, self.service_times) == dist
-        #         min_duration = dist
-        #         if self.verbose:
-        #             print(f"\rduration: {min_duration} - {best_routes}")
+        for generation in range(self.gen_iteration):
+            len_population = len(population)
+            new_members = []
+            for _ in range(self.gen_crossover):
+                index = random.randint(0, len_population)
+                routes1 = population[index]
+                routes2 = None
+                # for i in range(len_population):
+                #     if i != index and self._routes_can_crossover(routes1, population[i]):
+                #         routes2 = population[i]
+                #         break
+                # if routes2 is None:
+                #     continue
+                #
+                # new_members.append(self._generate_crossover(routes1, routes2))
 
-        if self.verbose:
-            print_same_line(f"total duration: {min_duration} - {best_routes}")
-            print("")
+            # for routes in population:
+            #     if self.limited_capacity and not are_capacities_ok(self, routes):
+            #         if self.verbose:
+            #             print_same_line(f"Generation: {i} - {routes} - capacity nok!")
+            #         continue
+            #
+            #     if self.verbose:
+            #         print_same_line(f"Generation: {i} - {routes}")
+            #
+            #     is_smaller, dist = routes_cost_is_less_than(routes, self.matrix, min_duration, self.service_times)
+            #     if is_smaller:
+            #         best_routes = routes
+            #         assert calculate_all_routes_costs(routes, self.matrix, self.service_times) == dist
+            #         min_duration = dist
+            #         if self.verbose:
+            #             print(f"\rbest found: {min_duration} - {best_routes}")
+
+        # if self.verbose:
+        #     print_same_line(f"total duration: {min_duration} - {best_routes}")
+        #     print("")
 
         return build_result(self, best_routes, min_duration)

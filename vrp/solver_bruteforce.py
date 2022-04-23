@@ -19,48 +19,41 @@ class SolverBruteForce:
 
         self.matrix = matrix
         self.vehicle_locations = [vehicle["start_index"] for vehicle in vehicles]
+        self.vehicles_count = len(self.vehicle_locations)
         self.vehicle_ids = [vehicle["id"] for vehicle in vehicles]
-        self.vehicles_count = len(vehicles)
         self.job_locations = [job["location_index"] for job in jobs]
+        self.jobs_count = len(self.job_locations)
         self.vehicle_capacities = [vehicle["capacity"][0] for vehicle in vehicles]
 
-    def _find_the_best_routes_in_permutations_of_the_parts(self, vehicles, parts):
-        # get all permutations for each part. ex: 3,4 - 5,6,7,8,9 | 4,3 - 9,7,8,6 | ...
-        # and fill the best_routes list with the pieces having the minimum cost
-        best_routes = []
-        for i, part in enumerate(parts):
-            min_cost = sys.maxsize
-            best_route = None
-            for part_permutation in itertools.permutations(part, len(part)):
-                # add the vehicle start location, so that we have a proper route
-                route = [vehicles[i], *part_permutation]
-                is_less, cost = route_costs_less_than(route, self.matrix, min_cost, self.service_times)
-                if is_less:
-                    min_cost = cost
-                    best_route = route
-            best_routes.append(best_route)
-        return best_routes
-
-    def _get_routes_worth_checking(self):
-        # get all partition combinations for job locations. ex: 3,4,5 - 6,7,8,9 | 3,4, - 5,6 - 7,8,9 | ...
-        for parts in partition(self.job_locations, self.vehicles_count):
-            # get all vehicle start location permutations that has the same count with the 'parts'
-            # ex: the parts: [3,4,5 - 6,7,8,9] has 2 pieces, so -> vehicles: 0,1 | 0,2 | 1,2 | 2,0 |...
-            for vehicles in itertools.permutations(self.vehicle_locations, len(parts)):
-                yield self._find_the_best_routes_in_permutations_of_the_parts(vehicles, parts)
+    def _get_all_routes(self):
+        # get permutations for job locations. ex: 3,4,5,6,7,8,9 | 4,3,5,6,7,8,9 | ...
+        for job_locations in itertools.permutations(self.job_locations, self.jobs_count):
+            # get all partition combinations for the job locations. ex: 3,4,5 - 6,7,8,9 | 3,4, - 5,6 - 7,8,9 | ...
+            for parts in partition(list(job_locations), self.vehicles_count):
+                # get all vehicle start location permutations that has the same count with the 'parts'
+                # ex: the parts: [3,4,5 - 6,7,8,9] has 2 pieces, so -> vehicles: 0,1 | 0,2 | 1,2 | 2,0 |...
+                for vehicles in itertools.permutations(self.vehicle_locations, len(parts)):
+                    routes = []
+                    for i, part in enumerate(parts):
+                        # insert vehicle start location so that we have a proper route
+                        route = [vehicles[i], *part]
+                        routes.append(route)
+                    yield routes
 
     def solve(self):
         best_routes = None
         min_duration = sys.maxsize
 
-        for routes in self._get_routes_worth_checking():
+        count = 0
+        for routes in self._get_all_routes():
+            count += 1
             if self.limited_capacity and not are_capacities_ok(self, routes):
                 if self.verbose:
-                    print_same_line(f"{routes} - capacity nok!")
+                    print_same_line(f"{count:,} - {routes} - capacity nok!")
                 continue
 
             if self.verbose:
-                print_same_line(f"{routes}")
+                print_same_line(f"{count:,} - {routes}")
 
             is_smaller, dist = routes_cost_is_less_than(routes, self.matrix, min_duration, self.service_times)
             if is_smaller:
@@ -68,10 +61,10 @@ class SolverBruteForce:
                 assert calculate_all_routes_costs(routes, self.matrix, self.service_times) == dist
                 min_duration = dist
                 if self.verbose:
-                    print(f"\rduration: {min_duration} - {best_routes}")
+                    print(f"\rbest: {min_duration} - {best_routes} - at iteration: - {count:,}")
 
         if self.verbose:
-            print_same_line(f"total duration: {min_duration} - {best_routes}")
+            print_same_line(f"final: {min_duration} - {best_routes} - total iterations: {count:,}")
             print("")
 
         return build_result(self, best_routes, min_duration)

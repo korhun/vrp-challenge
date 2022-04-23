@@ -1,5 +1,5 @@
 # vrp-challenge
-## run
+## How to run
 ```bash
     # install requirements
     pip install -r ./requirements.txt
@@ -14,7 +14,7 @@
     python core.py -s genetic -v
 ```
 
-### core.py arguments
+### Arguments for core.py
 ```bash
     -s --style           : [mandatory] Algoritm style. [values: bruteforce, genetic]                 
     -f --filename        : [optional] Input filename. [default: "./input/input.json"]
@@ -23,3 +23,6 @@
     -v --verbose         : [optional] Print extra info. [optional, default: false]     
 ```
 
+## Genetic algorithm
+Approach is based on this [video](https://youtu.be/3GAfjE_ChRI). 
+![img.png](img.png)
