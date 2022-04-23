@@ -1,8 +1,9 @@
 import itertools
 import sys
 
-from helpers import partition, routes_cost_is_less_than, calculate_all_routes_costs, print_same_line, \
-    build_location_to_delivery, build_location_to_job, calculate_route_cost, build_location_to_vehicle, route_costs_less_than, build_location_to_job_service_times
+from utils.generic_helpers import partition, print_same_line
+from utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
+    build_location_to_delivery, build_location_to_job, calculate_route_cost, build_location_to_vehicle, route_costs_less_than, build_result, are_capacities_ok
 
 
 class SolverBruteForce:
@@ -19,49 +20,9 @@ class SolverBruteForce:
         self.matrix = matrix
         self.vehicle_locations = [vehicle["start_index"] for vehicle in vehicles]
         self.vehicle_ids = [vehicle["id"] for vehicle in vehicles]
+        self.vehicles_count = len(vehicles)
         self.job_locations = [job["location_index"] for job in jobs]
         self.vehicle_capacities = [vehicle["capacity"][0] for vehicle in vehicles]
-
-    def _build_result(self, best_routes, min_duration):
-        if best_routes is None:
-            return None
-
-        tu = []
-        for route in best_routes:
-            vehicle_id = self.location_to_vehicle[route[0]]["id"]
-            tu.append((vehicle_id, route))
-        dic = dict(tu)
-
-        routes = {}
-        for vehicle_id in self.vehicle_ids:
-            jobs = []
-            cost = 0
-            if vehicle_id in dic:
-                route = dic[vehicle_id]
-                for location in route[1:]:
-                    jobs.append(str(self.location_to_job[location]["id"]))
-                cost = calculate_route_cost(route, self.matrix, self.service_times)
-            routes[str(vehicle_id)] = {
-                "jobs": jobs,
-                "delivery_duration": cost
-            }
-
-        return {
-            "total_delivery_duration": min_duration,
-            "routes": routes
-        }
-
-    def _are_capacities_ok(self, routes):
-        for route in routes:
-            vehicle_id = route[0]
-            capacity = self.vehicle_capacities[vehicle_id]
-
-            product_required = 0
-            for location in route[1:]:
-                product_required += self.location_to_delivery[location]
-                if product_required > capacity:
-                    return False
-        return True
 
     def _find_the_best_routes_in_permutations_of_the_parts(self, vehicles, parts):
         # get all permutations for each part. ex: 3,4 - 5,6,7,8,9 | 4,3 - 9,7,8,6 | ...
@@ -82,7 +43,7 @@ class SolverBruteForce:
 
     def _get_routes_worth_checking(self):
         # get all partition combinations for job locations. ex: 3,4,5 - 6,7,8,9 | 3,4, - 5,6 - 7,8,9 | ...
-        for parts in partition(self.job_locations):
+        for parts in partition(self.job_locations, self.vehicles_count):
             # get all vehicle start location permutations that has the same count with the 'parts'
             # ex: the parts: [3,4,5 - 6,7,8,9] has 2 pieces, so -> vehicles: 0,1 | 0,2 | 1,2 | 2,0 |...
             for vehicles in itertools.permutations(self.vehicle_locations, len(parts)):
@@ -93,7 +54,7 @@ class SolverBruteForce:
         min_duration = sys.maxsize
 
         for routes in self._get_routes_worth_checking():
-            if self.limited_capacity and not self._are_capacities_ok(routes):
+            if self.limited_capacity and not are_capacities_ok(self, routes):
                 if self.verbose:
                     print_same_line(f"{routes} - capacity nok!")
                 continue
@@ -113,4 +74,4 @@ class SolverBruteForce:
             print_same_line(f"total duration: {min_duration} - {best_routes}")
             print("")
 
-        return self._build_result(best_routes, min_duration)
+        return build_result(self, best_routes, min_duration)

@@ -1,6 +1,7 @@
 import unittest
 
-from vrp.helpers import calculate_route_cost, partition, routes_cost_is_less_than, calculate_all_routes_costs
+from vrp.utils.generic_helpers import partition
+from vrp.utils.solver_common import calculate_route_cost, routes_cost_is_less_than, calculate_all_routes_costs
 
 
 class TestVrp(unittest.TestCase):
@@ -20,9 +21,8 @@ class TestVrp(unittest.TestCase):
                           [[1], [3], [2, 4]],
                           [[1, 2], [3], [4]],
                           [[2], [1, 3], [4]],
-                          [[2], [3], [1, 4]],
-                          [[1], [2], [3], [4]]]
-        actual_value = list(partition(collection))
+                          [[2], [3], [1, 4]]]
+        actual_value = list(partition(collection, 3))
         self.assertEqual(actual_value, expected_value, "partition failed!")
 
     def test_calculate_route_cost(self):

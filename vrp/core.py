@@ -5,8 +5,9 @@ import os
 import time
 from datetime import timedelta
 
-from helpers import load_json_file
+from utils.generic_helpers import load_json_file
 from solver_bruteforce import SolverBruteForce
+from solver_genetic import SolverGenetic
 
 
 def _default_options(verbose=None, limited_capacity=None, include_service=None):
@@ -23,7 +24,7 @@ def main(style, input_filename=None, options=None):
         # input_filename = "./input/input_4_vehicles.json"
         # input_filename = "./input/input_single_vehicle.json"
         # input_filename = "./input/input_12_locations.json"
-        # input_filename = "./input/input_14_locations.json"
+        input_filename = "./input/input_14_locations.json"
         # input_filename = "./input/input_18_locations.json"
     if options is None:
         options = _default_options()
@@ -40,6 +41,8 @@ def main(style, input_filename=None, options=None):
     solver = None
     if style == "bruteforce":
         solver = SolverBruteForce(vehicles, jobs, matrix, options)
+    elif style == "genetic":
+        solver = SolverGenetic(vehicles, jobs, matrix, options)
     if solver is None:
         raise ValueError(f"Bad style: '{style}'")
 

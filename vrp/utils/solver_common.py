@@ -1,43 +1,12 @@
-import os
-import json
+import sys
 
-
-def load_json_file(file_path):
-    assert os.path.isfile(file_path)
-    with open(file_path) as json_data:
-        return json.load(json_data)
-
-
-def partition(collection):
-    """
-    Finds all possible combinations using all elements of the collection.
-    https://stackoverflow.com/a/30134039/1266873
-    """
-    if len(collection) == 1:
-        yield [collection]
-        return
-
-    first = collection[0]
-    for smaller in partition(collection[1:]):
-        # insert `first` in each of the subpartition's subsets
-        for n, subset in enumerate(smaller):
-            yield smaller[:n] + [[first] + subset] + smaller[n + 1:]
-        # put `first` in its own subset
-        yield [[first]] + smaller
-
-
-def lists_overlap(a, b):
-    """
-    Checks if two lists have at least one common element.
-    """
-    return not frozenset(a).isdisjoint(b)
-
-
-def lists_overlap_count(a, b):
-    """
-    Finds two lists' common elements count
-    """
-    return len(frozenset(a) & frozenset(b))
+# https://stackoverflow.com/a/38637774/1266873
+gettrace = getattr(sys, 'gettrace', None)
+if gettrace():
+    print('debug mode')
+    __debugging = True
+else:
+    __debugging = False
 
 
 def calculate_route_cost(route, matrix, service_times):
@@ -116,5 +85,55 @@ def build_location_to_vehicle(vehicles):
     return dict(tuples)
 
 
-def print_same_line(text):
-    print('\r' + text, end='                                                 ')
+def are_capacities_ok(solver, routes):
+    if __debugging:
+        assert getattr(solver, "vehicle_capacities", None) is not None
+        assert getattr(solver, "location_to_delivery", None) is not None
+
+    for route in routes:
+        vehicle_id = route[0]
+        capacity = solver.vehicle_capacities[vehicle_id]
+
+        product_required = 0
+        for location in route[1:]:
+            product_required += solver.location_to_delivery[location]
+            if product_required > capacity:
+                return False
+    return True
+
+
+def build_result(solver, best_routes, min_duration):
+    if __debugging:
+        assert getattr(solver, "location_to_vehicle", None) is not None
+        assert getattr(solver, "vehicle_ids", None) is not None
+        assert getattr(solver, "location_to_job", None) is not None
+        assert getattr(solver, "matrix", None) is not None
+        assert getattr(solver, "service_times", None) is not None
+
+    if best_routes is None:
+        return None
+
+    tu = []
+    for route in best_routes:
+        vehicle_id = solver.location_to_vehicle[route[0]]["id"]
+        tu.append((vehicle_id, route))
+    dic = dict(tu)
+
+    routes = {}
+    for vehicle_id in solver.vehicle_ids:
+        jobs = []
+        cost = 0
+        if vehicle_id in dic:
+            route = dic[vehicle_id]
+            for location in route[1:]:
+                jobs.append(str(solver.location_to_job[location]["id"]))
+            cost = calculate_route_cost(route, solver.matrix, solver.service_times)
+        routes[str(vehicle_id)] = {
+            "jobs": jobs,
+            "delivery_duration": cost
+        }
+
+    return {
+        "total_delivery_duration": min_duration,
+        "routes": routes
+    }
