@@ -22,7 +22,7 @@ class SolverBruteForce:
         self.job_locations = [job["location_index"] for job in jobs]
         self.vehicle_capacities = [vehicle["capacity"][0] for vehicle in vehicles]
 
-    def _build_result_json(self, best_routes, min_duration):
+    def _build_result(self, best_routes, min_duration):
         if best_routes is None:
             return None
 
@@ -113,4 +113,4 @@ class SolverBruteForce:
             print_same_line(f"total duration: {min_duration} - {best_routes}")
             print("")
 
-        return self._build_result_json(best_routes, min_duration)
+        return self._build_result(best_routes, min_duration)
