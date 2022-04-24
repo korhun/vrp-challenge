@@ -26,6 +26,9 @@ def calculate_all_routes_costs(routes, matrix, service_times):
 
 
 def routes_cost_is_less_than(routes, matrix, cost, service_times):
+    """
+    :return: (False, None) if routes total costs less than 'cost' else (True, cost value of the route)
+    """
     total = 0
     for route in routes:
         pre_index = route[0]
@@ -74,6 +77,9 @@ def build_location_to_vehicle(vehicles):
 
 
 def are_capacities_ok(solver, routes):
+    """
+    Calculates delivery requirements of the routes and checks if vehicle capacities can afford the trip.
+    """
     if __debugging:
         assert getattr(solver, "vehicle_capacities", None) is not None
         assert getattr(solver, "location_to_delivery", None) is not None
@@ -91,6 +97,9 @@ def are_capacities_ok(solver, routes):
 
 
 def build_result(solver, best_routes, min_duration):
+    """
+    Builds result report for all vehicle's routes.
+    """
     if __debugging:
         assert getattr(solver, "location_to_vehicle", None) is not None
         assert getattr(solver, "vehicle_ids", None) is not None
