@@ -2,6 +2,8 @@ import random
 import sys
 from array import array
 
+from numpy import cross
+
 from utils.generic_helpers import partition, print_same_line
 from utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
     build_location_to_delivery, build_location_to_job, calculate_route_cost, build_location_to_vehicle, route_costs_less_than, build_result, are_capacities_ok
@@ -73,6 +75,9 @@ class SolverGenetic:
     # def _routes_can_crossover(self, routes1, routes2):
     #     if len(routes1) != len(routes2)
 
+    def _generate_crossover(self, routes1, routes2):
+        return routes1
+
     @staticmethod
     def random_partition(list_in, n):
         # https://stackoverflow.com/a/51838144/1266873
@@ -96,25 +101,26 @@ class SolverGenetic:
         best_routes = None
         min_duration = sys.maxsize
 
-        population = []
-        for _ in range(self.gen_k):
-            population.append(self._generate_random_routes())
+        population = [self._generate_random_routes() for _ in range(self.gen_k)]
 
         for generation in range(self.gen_iteration):
             len_population = len(population)
             new_members = []
-            for _ in range(self.gen_crossover):
-                index = random.randint(0, len_population)
-                routes1 = population[index]
-                routes2 = None
-                # for i in range(len_population):
-                #     if i != index and self._routes_can_crossover(routes1, population[i]):
-                #         routes2 = population[i]
-                #         break
-                # if routes2 is None:
-                #     continue
-                #
-                # new_members.append(self._generate_crossover(routes1, routes2))
+
+            crossover_pairs = [(random.randint(0, len_population), random.randint(0, len_population)) for _ in range(self.gen_crossover)]
+            for i1, i2 in crossover_pairs:
+                new_members.append(self._generate_random_routes(population[i1], population[i2]))
+            #     index = random.randint(0, len_population)
+            #     routes1 = population[index]
+            #     routes2 = None
+            #     # for i in range(len_population):
+            #     #     if i != index and self._routes_can_crossover(routes1, population[i]):
+            #     #         routes2 = population[i]
+            #     #         break
+            #     # if routes2 is None:
+            #     #     continue
+            #     #
+            #     # new_members.append(self._generate_crossover(routes1, routes2))
 
             # for routes in population:
             #     if self.limited_capacity and not are_capacities_ok(self, routes):

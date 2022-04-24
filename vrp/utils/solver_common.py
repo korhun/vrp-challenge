@@ -58,31 +58,19 @@ def route_costs_less_than(route, matrix, cost, service_times):
 
 
 def build_location_to_delivery(jobs):
-    tuples = []
-    for job in jobs:
-        tuples.append((job["location_index"], job["delivery"][0]))
-    return dict(tuples)
+    return dict([(job["location_index"], job["delivery"][0]) for job in jobs])
 
 
 def build_location_to_job(jobs):
-    tuples = []
-    for job in jobs:
-        tuples.append((job["location_index"], job))
-    return dict(tuples)
+    return dict([(job["location_index"], job) for job in jobs])
 
 
 def build_location_to_job_service_times(jobs):
-    tuples = []
-    for job in jobs:
-        tuples.append((job["location_index"], job["service"]))
-    return dict(tuples)
+    return dict([(job["location_index"], job["service"]) for job in jobs])
 
 
 def build_location_to_vehicle(vehicles):
-    tuples = []
-    for vehicle in vehicles:
-        tuples.append((vehicle["start_index"], vehicle))
-    return dict(tuples)
+    return dict([(vehicle["start_index"], vehicle) for vehicle in vehicles])
 
 
 def are_capacities_ok(solver, routes):

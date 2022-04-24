@@ -1,8 +1,8 @@
 import itertools
 import sys
 
-from utils.generic_helpers import partition, print_same_line
-from utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
+from vrp.utils.generic_helpers import partition, print_same_line
+from vrp.utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
     build_location_to_delivery, build_location_to_job, calculate_route_cost, build_location_to_vehicle, route_costs_less_than, build_result, are_capacities_ok
 
 
@@ -12,7 +12,8 @@ class SolverBruteForce:
         self.verbose = options["verbose"]
         self.limited_capacity = options["limited_capacity"]
 
-        self.service_times = build_location_to_job_service_times(jobs) if options["include_service"] else None
+        self.include_service = options["include_service"]
+        self.service_times = build_location_to_job_service_times(jobs)
         self.location_to_delivery = build_location_to_delivery(jobs)
         self.location_to_job = build_location_to_job(jobs)
         self.location_to_vehicle = build_location_to_vehicle(vehicles)
@@ -45,6 +46,7 @@ class SolverBruteForce:
         min_duration = sys.maxsize
 
         count = 0
+        service_times = self.service_times if self.include_service else None
         for routes in self._get_all_routes():
             count += 1
             if self.limited_capacity and not are_capacities_ok(self, routes):
@@ -55,10 +57,10 @@ class SolverBruteForce:
             if self.verbose:
                 print_same_line(f"{count:,} - {routes}")
 
-            is_smaller, dist = routes_cost_is_less_than(routes, self.matrix, min_duration, self.service_times)
+            is_smaller, dist = routes_cost_is_less_than(routes, self.matrix, min_duration, service_times)
             if is_smaller:
                 best_routes = routes
-                assert calculate_all_routes_costs(routes, self.matrix, self.service_times) == dist
+                assert calculate_all_routes_costs(routes, self.matrix, service_times) == dist
                 min_duration = dist
                 if self.verbose:
                     print(f"\rbest: {min_duration} - {best_routes} - at iteration: - {count:,}")
