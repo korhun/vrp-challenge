@@ -183,6 +183,11 @@ class SolverGenetic:
             if all_equal(gen_all_costs):
                 break
 
+        if self.limited_capacity and not are_capacities_ok(self, best_routes):
+            print_same_line(f"final: {min_cost} - {best_routes} - total generations: {generation:,} - capacity not ok!")
+            print("")
+            return None
+
         if self.verbose:
             print_same_line(f"final: {min_cost} - {best_routes} - total generations: {generation:,}")
             print("")
