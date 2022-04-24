@@ -1,9 +1,14 @@
 import itertools
 import sys
 
-from vrp.utils.generic_helpers import partition, print_same_line
-from vrp.utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
-    build_location_to_delivery, build_location_to_job, calculate_route_cost, build_location_to_vehicle, route_costs_less_than, build_result, are_capacities_ok
+try:
+    from utils.generic_helpers import partition, print_same_line
+    from utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
+        build_location_to_delivery, build_location_to_job, build_location_to_vehicle, build_result, are_capacities_ok
+except ImportError:
+    from vrp.utils.generic_helpers import partition, print_same_line
+    from vrp.utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
+        build_location_to_delivery, build_location_to_job, build_location_to_vehicle, build_result, are_capacities_ok
 
 
 class SolverBruteForce:
@@ -11,8 +16,8 @@ class SolverBruteForce:
     def __init__(self, vehicles, jobs, matrix, options):
         self.verbose = options["verbose"]
         self.limited_capacity = options["limited_capacity"]
-
         self.include_service = options["include_service"]
+
         self.service_times = build_location_to_job_service_times(jobs)
         self.location_to_delivery = build_location_to_delivery(jobs)
         self.location_to_job = build_location_to_job(jobs)

@@ -1,5 +1,6 @@
 import json
 import os
+from itertools import groupby
 
 
 def load_json_file(file_path):
@@ -44,6 +45,11 @@ def lists_overlap_count(a, b):
     Finds two lists' common elements count
     """
     return len(frozenset(a) & frozenset(b))
+
+
+def all_equal(iterable):
+    g = groupby(iterable)
+    return next(g, True) and not next(g, False)
 
 
 def print_same_line(text):

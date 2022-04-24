@@ -26,6 +26,7 @@ def main(style, input_filename=None, options=None):
         # input_filename = "./input/input_12_locations.json"
         # input_filename = "./input/input_14_locations.json"
         # input_filename = "./input/input_18_locations.json"
+        # input_filename = "./input/input_20_locations.json"
     if options is None:
         options = _default_options()
     for key in _default_options().keys():
