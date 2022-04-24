@@ -43,7 +43,7 @@ class SolverBruteForce:
 
     def solve(self):
         best_routes = None
-        min_duration = sys.maxsize
+        min_cost = sys.maxsize
 
         count = 0
         service_times = self.service_times if self.include_service else None
@@ -57,16 +57,16 @@ class SolverBruteForce:
             if self.verbose:
                 print_same_line(f"{count:,} - {routes}")
 
-            is_smaller, dist = routes_cost_is_less_than(routes, self.matrix, min_duration, service_times)
+            is_smaller, dist = routes_cost_is_less_than(routes, self.matrix, min_cost, service_times)
             if is_smaller:
                 best_routes = routes
                 assert calculate_all_routes_costs(routes, self.matrix, service_times) == dist
-                min_duration = dist
+                min_cost = dist
                 if self.verbose:
-                    print(f"\rbest: {min_duration} - {best_routes} - at iteration: - {count:,}")
+                    print(f"\rbest: {min_cost} - {best_routes} - at iteration: - {count:,}")
 
         if self.verbose:
-            print_same_line(f"final: {min_duration} - {best_routes} - total iterations: {count:,}")
+            print_same_line(f"final: {min_cost} - {best_routes} - total iterations: {count:,}")
             print("")
 
-        return build_result(self, best_routes, min_duration)
+        return build_result(self, best_routes, min_cost)
