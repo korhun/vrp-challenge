@@ -4,9 +4,9 @@ import sys
 
 import numpy as np
 
-from utils.helpers import partition, print_same_line, all_equal
-from utils.solver_helpers import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
-    build_location_to_delivery, build_location_to_job, calculate_route_cost, build_location_to_vehicle, route_costs_less_than, build_result, are_capacities_ok
+from utils.helpers import print_same_line, all_equal
+from utils.solver_helpers import calculate_all_routes_costs, build_location_to_job_service_times, \
+    build_location_to_delivery, build_location_to_job, build_location_to_vehicle, build_result, are_capacities_ok
 
 
 class SolverGenetic:
