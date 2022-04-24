@@ -26,3 +26,9 @@
 ## Genetic algorithm
 Approach is based on this [video](https://youtu.be/3GAfjE_ChRI) and this [paper](https://www.mdpi.com/2079-9292/10/24/3147/pdf).
 ![img.png](img.png)
+
+## Hot to run tests
+```bash
+    # goto vrp-challenge directory and run:
+    python -m unittest discover tests
+```

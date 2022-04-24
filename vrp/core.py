@@ -5,7 +5,7 @@ import os
 import time
 from datetime import timedelta
 
-from utils.generic_helpers import load_json_file
+from utils.helpers import load_json_file
 from solver_bruteforce import SolverBruteForce
 from solver_genetic import SolverGenetic
 

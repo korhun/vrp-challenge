@@ -4,8 +4,8 @@ import sys
 
 import numpy as np
 
-from utils.generic_helpers import partition, print_same_line, all_equal
-from utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
+from utils.helpers import partition, print_same_line, all_equal
+from utils.solver_helpers import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
     build_location_to_delivery, build_location_to_job, calculate_route_cost, build_location_to_vehicle, route_costs_less_than, build_result, are_capacities_ok
 
 
@@ -57,7 +57,6 @@ class SolverGenetic:
         r = list(np.concatenate(routes))
 
         offspring = mutate(r, 3)
-        # offspring = mutate(r, 5)
         if offspring[0] not in self.vehicle_locations:
             for i, val in enumerate(offspring):
                 if val in self.vehicle_locations:
@@ -90,12 +89,6 @@ class SolverGenetic:
             return = offspring_start + randomized cross_genes
             """
             cross_genes = parent2[-cross_count:]
-
-            # cross_genes alternative
-            # start = random.randint(0, len(parent2) - 2)
-            # end = random.randint(start + 1, len(parent2) - 1)
-            # cross_genes = parent2[start: end]
-
             offspring_start = [gen for gen in parent1 if gen not in cross_genes]
             random.shuffle(cross_genes)
             return offspring_start + cross_genes
@@ -104,7 +97,6 @@ class SolverGenetic:
         r2 = list(np.concatenate(routes2))
 
         offspring = crossover(r1, r2, 3)
-        # offspring = crossover(r1, r2, 5)
         if offspring[0] not in self.vehicle_locations:
             for i, val in enumerate(offspring):
                 if val in self.vehicle_locations:

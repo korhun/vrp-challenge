@@ -1,7 +1,7 @@
 import unittest
 
-from vrp.utils.generic_helpers import partition
-from vrp.utils.solver_common import calculate_route_cost, routes_cost_is_less_than, calculate_all_routes_costs
+from vrp.utils.helpers import partition
+from vrp.utils.solver_helpers import calculate_route_cost, routes_cost_is_less_than, calculate_all_routes_costs
 from vrp.solver_bruteforce import SolverBruteForce
 
 

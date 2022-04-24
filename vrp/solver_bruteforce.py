@@ -2,12 +2,12 @@ import itertools
 import sys
 
 try:
-    from utils.generic_helpers import partition, print_same_line
-    from utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
+    from utils.helpers import partition, print_same_line
+    from utils.solver_helpers import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
         build_location_to_delivery, build_location_to_job, build_location_to_vehicle, build_result, are_capacities_ok
 except ImportError:
-    from vrp.utils.generic_helpers import partition, print_same_line
-    from vrp.utils.solver_common import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
+    from vrp.utils.helpers import partition, print_same_line
+    from vrp.utils.solver_helpers import routes_cost_is_less_than, calculate_all_routes_costs, build_location_to_job_service_times, \
         build_location_to_delivery, build_location_to_job, build_location_to_vehicle, build_result, are_capacities_ok
 
 
