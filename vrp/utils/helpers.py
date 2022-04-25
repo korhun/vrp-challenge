@@ -49,7 +49,7 @@ def lists_overlap_count(a, b):
 
 def all_equal(iterable):
     """
-    Finds if each value pf the iterable are equal
+    Finds if each value of the iterable are equal
     """
     g = groupby(iterable)
     return next(g, True) and not next(g, False)
