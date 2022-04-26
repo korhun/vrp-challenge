@@ -1,3 +1,4 @@
+![python-app](https://github.com/korhun/vrp-challenge/actions/workflows/python-app.yml/badge.svg)
 # vrp-challenge
 ## How to run
 ```bash
