@@ -155,8 +155,21 @@ class SolverGenetic:
             new_randoms = [self._generate_random_routes() for _ in range(self.gen_new)]
 
             population += crossover_offsprings + mutation_offsprings + new_randoms
-            population.sort(key=lambda x: calculate_all_routes_costs(x, self.matrix, service_times))
-            population = population[:self.gen_k]
+            if self.limited_capacity:
+                costs = []
+                for routes in population:
+                    cost = calculate_all_routes_costs(routes, self.matrix, service_times)
+                    if not are_capacities_ok(self, routes):
+                        cost += 1000000
+                    costs.append({
+                        "cost": cost,
+                        "routes": routes
+                    })
+                costs.sort(key=lambda x: x["cost"])
+                population = [x["routes"] for x in costs[:self.gen_k]]
+            else:
+                population.sort(key=lambda x: calculate_all_routes_costs(x, self.matrix, service_times))
+                population = population[:self.gen_k]
 
             gen_all_costs = [calculate_all_routes_costs(x, self.matrix, service_times) for x in population]
             gen_average_cost = statistics.mean(gen_all_costs)
