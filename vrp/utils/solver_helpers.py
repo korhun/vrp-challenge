@@ -106,6 +106,7 @@ def build_result(solver, best_routes, min_duration):
         assert getattr(solver, "location_to_job", None) is not None
         assert getattr(solver, "matrix", None) is not None
         assert getattr(solver, "service_times", None) is not None
+        assert getattr(solver, "include_service", None) is not None
 
     if best_routes is None:
         return None
@@ -117,6 +118,7 @@ def build_result(solver, best_routes, min_duration):
     dic = dict(tu)
 
     routes = {}
+    service_times = solver.service_times if solver.include_service else None
     for vehicle_id in solver.vehicle_ids:
         jobs = []
         cost = 0
@@ -124,7 +126,7 @@ def build_result(solver, best_routes, min_duration):
             route = dic[vehicle_id]
             for location in route[1:]:
                 jobs.append(str(solver.location_to_job[location]["id"]))
-            cost = calculate_route_cost(route, solver.matrix, solver.service_times)
+            cost = calculate_route_cost(route, solver.matrix, service_times)
         routes[str(vehicle_id)] = {
             "jobs": jobs,
             "delivery_duration": cost

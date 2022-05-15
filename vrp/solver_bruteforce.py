@@ -62,11 +62,11 @@ class SolverBruteForce:
             if self.verbose:
                 print_same_line(f"{count:,} - {routes}")
 
-            is_smaller, dist = routes_cost_is_less_than(routes, self.matrix, min_cost, service_times)
+            is_smaller, cost = routes_cost_is_less_than(routes, self.matrix, min_cost, service_times)
             if is_smaller:
                 best_routes = routes
-                assert calculate_all_routes_costs(routes, self.matrix, service_times) == dist
-                min_cost = dist
+                assert calculate_all_routes_costs(routes, self.matrix, service_times) == cost
+                min_cost = cost
                 if self.verbose:
                     print(f"\rbest: {min_cost} - {best_routes} - at iteration: - {count:,}")
 
