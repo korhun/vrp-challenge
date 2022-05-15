@@ -78,8 +78,9 @@ class TestVrp(unittest.TestCase):
         options = {'verbose': False, 'limited_capacity': False, 'include_service': False}
         solver = SolverBruteForce(vehicles, jobs, matrix, options)
 
-        expected_value = {'total_delivery_duration': 4086, 'routes': {'1': {'jobs': ['4', '7', '1', '2', '5', '6', '3'], 'delivery_duration': 6481}}}
+        expected_value = {'total_delivery_duration': 4086, 'routes': {'1': {'jobs': ['4', '7', '1', '2', '5', '6', '3'], 'delivery_duration': 4086}}}
         actual_value = solver.solve()
+        print(actual_value)
         self.assertEqual(actual_value, expected_value, "bruteforce failed with single vehicle input!")
 
 
